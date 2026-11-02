@@ -155,8 +155,9 @@ logs/                    logs de desarrollo (ignorado por git)
 - **1.0.0** — Primera version estable: el contrato se enuncia en positivo, las
   fronteras de alcance quedan solo en el README y la instalacion en los
   consumidores pasa a ser por Git con tag fijo, no editable.
-- **Sin tag todavia** — La libreria pasa a llamarse `db_utils` (repositorio
+- **1.1.0** — La libreria pasa a llamarse `db_utils` (repositorio
   `SebaxFentex/db_utils`): cambian la carpeta, el paquete (`src/db_utils`), el
   nombre de la distribucion y el logger. El prefijo de los archivos de log
   (`db-`) y la variable `DB_NIVEL_LOG` no cambian: renombrar la libreria no
-  arrastra la configuracion de quien la consume.
+  arrastra la configuracion de quien la consume. Rompe el import de cualquier
+  consumidor que todavia haga `import db`.
