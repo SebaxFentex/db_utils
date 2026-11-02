@@ -14,15 +14,15 @@ from contextlib import redirect_stdout
 
 from sqlalchemy import create_engine, text
 
-from db import (
+from db_utils import (
     SEPARADOR_CONSULTAS,
     ExcepcionConexion,
     ExcepcionEjecucionSql,
     ejecutar_sql,
 )
-from db._log import configurar_log
+from db_utils._log import configurar_log
 
-log = logging.getLogger("db.tests")
+log = logging.getLogger("db_utils.tests")
 
 
 def _crear_engine():
@@ -161,7 +161,7 @@ def _probar_sin_print_y_con_log(engine) -> None:
             capturado.append(record.getMessage())
 
     colector = _Colector()
-    logger_ejecucion = logging.getLogger("db.ejecucion")
+    logger_ejecucion = logging.getLogger(ejecutar_sql.__module__)
     logger_ejecucion.addHandler(colector)
     logger_ejecucion.setLevel(logging.DEBUG)
     try:

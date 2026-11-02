@@ -14,7 +14,7 @@ import os
 
 from sqlalchemy import Engine
 
-from db import (
+from db_utils import (
     ExcepcionConexion,
     ExcepcionEjecucionSql,
     crear_engine_oracle,
@@ -22,9 +22,9 @@ from db import (
     ejecutar_sql,
     inicializar_cliente_oracle,
 )
-from db._log import configurar_log
+from db_utils._log import configurar_log
 
-log = logging.getLogger("db.tests")
+log = logging.getLogger("db_utils.tests")
 
 
 def _leer_variable_obligatoria(nombre: str) -> str:

@@ -1,7 +1,7 @@
 """Configuracion de log para los entrypoints (tests, ejecutables).
 
 La libreria emite logs via logging.getLogger(__name__); este modulo configura el
-logger "db" cuando el entrypoint lo llama.
+logger "db_utils" cuando el entrypoint lo llama.
 """
 
 import logging
@@ -35,19 +35,19 @@ def configurar_log(
     prefijo: str = PREFIJO_LOG_PREDETERMINADO,
     conservar: int = MAX_LOGS_PREDETERMINADO,
 ) -> logging.Logger:
-    """Configura archivo + consola para el logger "db". Idempotente.
+    """Configura archivo + consola para el logger "db_utils". Idempotente.
 
     Nivel: parametro > env DB_NIVEL_LOG > NIVEL_LOG_PREDETERMINADO.
     Valor invalido cae a NIVEL_LOG_PREDETERMINADO. Prefijo y retencion llegan
     por parametro (defaults "db-" y 30).
-    El NullHandler que la libreria agrega en db/__init__.py no cuenta
+    El NullHandler que la libreria agrega en db_utils/__init__.py no cuenta
     como configuracion: se ignora a proposito para poder configurarlo aqui.
     """
     resuelto = (nivel or os.environ.get("DB_NIVEL_LOG", NIVEL_LOG_PREDETERMINADO)).upper()
     if resuelto not in logging.getLevelNamesMapping():
         resuelto = NIVEL_LOG_PREDETERMINADO
 
-    logger = logging.getLogger("db")
+    logger = logging.getLogger("db_utils")
     if any(not isinstance(h, logging.NullHandler) for h in logger.handlers):
         return logger
 

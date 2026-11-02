@@ -1,5 +1,5 @@
 [project]
-name = "db"
+name = "db_utils"
 version = "1.0.0"
 description = "Utilidades para crear engines de SQLAlchemy y ejecutar SQL en Oracle y SQL Server"
 readme = "README.md"

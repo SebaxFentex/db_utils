@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import logging
 
-from db import (
+from db_utils import (
     ExcepcionConexion,
     crear_engine_oracle,
     crear_engine_sqlserver,
@@ -18,9 +18,9 @@ from db import (
 )
 from sqlalchemy.pool import QueuePool
 
-from db._log import configurar_log
+from db_utils._log import configurar_log
 
-log = logging.getLogger("db.tests")
+log = logging.getLogger("db_utils.tests")
 
 
 def _probar_oracle() -> None:

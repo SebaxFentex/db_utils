@@ -1,10 +1,10 @@
-# db
+# db_utils
 
 Libreria interna para crear engines de SQLAlchemy y ejecutar bloques de SQL en
 Oracle y SQL Server.
 
 ```python
-from db import crear_engine_oracle, ejecutar_sql
+from db_utils import crear_engine_oracle, ejecutar_sql
 
 engine = crear_engine_oracle(usuario="u", clave="c", host="servidor", servicio="SERVICIO")
 ejecutar_sql("update tabla set estado = 1 where periodo = :periodo", engine, parametros={"periodo": "202609"})
@@ -44,10 +44,10 @@ En el `pyproject.toml` de `python_<nombre>`, por Git con el tag fijo (nunca
 
 ```toml
 [project]
-dependencies = ["db"]
+dependencies = ["db_utils"]
 
 [tool.uv.sources]
-db = { git = "https://github.com/SebaxFentex/db", tag = "v1.0.0" }
+db_utils = { git = "https://github.com/SebaxFentex/db_utils", tag = "v1.0.0" }
 ```
 
 El repositorio es publico: no hacen falta credenciales. El `tag` fija la version
@@ -75,7 +75,7 @@ No hay `.bat` de la libreria que el consumidor deba ejecutar.
 Una sentencia:
 
 ```python
-from db import crear_engine_sqlserver, ejecutar_sql
+from db_utils import crear_engine_sqlserver, ejecutar_sql
 
 engine = crear_engine_sqlserver(
     usuario="usuario", clave="clave", host="servidor", base_datos="BASE",
@@ -90,7 +90,7 @@ ejecutar_sql(
 Varias sentencias en un bloque atomico:
 
 ```python
-from db import SEPARADOR_CONSULTAS, ejecutar_sql
+from db_utils import SEPARADOR_CONSULTAS, ejecutar_sql
 
 sql = f"""
 -- Limpia el periodo
@@ -168,7 +168,7 @@ otras. El consumidor propaga sin repetir el numero:
 
 ```python
 import sys
-from db import ExcepcionDb
+from db_utils import ExcepcionDb
 
 try:
     ejecutar_sql(sql, engine)
@@ -190,7 +190,7 @@ Los dos primeros no necesitan credenciales (sqlite en memoria). El e2e usa los
 datos de `.env` (copiar `.env.example`) y falla con mensaje si no estan.
 
 ```text
-src/db/
+src/db_utils/
   __init__.py        NullHandler + API publica
   _log.py            configurar_log() y purgar_logs() para los tests
   _excepciones.py    ExcepcionDb, ExcepcionConexion, ExcepcionEjecucionSql

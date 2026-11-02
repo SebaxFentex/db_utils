@@ -1,4 +1,4 @@
-# AGENTS.md — db
+# AGENTS.md — db_utils
 
 Guia para agentes (y humanos) que trabajan en este repo. Cada regla con su
 "porque" viene de un defecto real; no relajarla sin evidencia nueva.
@@ -7,8 +7,8 @@ Guia para agentes (y humanos) que trabajan en este repo. Cada regla con su
 
 Libreria interna PAQUETE (`uv_build`, layout `src/`) que construye engines de
 SQLAlchemy para Oracle y SQL Server y ejecuta bloques de SQL en una sola
-transaccion. Se publica en `https://github.com/SebaxFentex/db` y los proyectos de
-`D:\Tigo\Proyectos` la declaran por Git con un tag fijo en su
+transaccion. Se publica en `https://github.com/SebaxFentex/db_utils` y los
+proyectos de `D:\Tigo\Proyectos` la declaran por Git con un tag fijo en su
 `[tool.uv.sources]`; no se opera con el Programador de tareas y no pide
 credenciales a ningun humano.
 
@@ -16,7 +16,7 @@ Stack: Python 3.14, `uv`, SQLAlchemy 2.1, `oracledb` 26 (thin por defecto),
 `pymssql` 2.4.
 
 ```text
-src/db/
+src/db_utils/
   __init__.py        NullHandler + API publica (sin re-exports de modulos internos)
   _log.py            configurar_log() + purgar_logs() — solo para entrypoints
   _excepciones.py    ExcepcionDb (1), ExcepcionConexion (2), ExcepcionEjecucionSql (3)
@@ -35,8 +35,8 @@ logs/                    logs de desarrollo (ignorado por git)
 
 ## 2. Arquitectura y API
 
-- **La libreria no lee entorno.** `import db` no exige ninguna variable y no
-  abre conexiones. Todo entra por parametro: el `.env` es del consumidor.
+- **La libreria no lee entorno.** `import db_utils` no exige ninguna variable y
+  no abre conexiones. Todo entra por parametro: el `.env` es del consumidor.
 - `crear_engine_oracle(usuario, clave, host, servicio, puerto=1521, query=None)`
   y `crear_engine_sqlserver(usuario, clave, host, base_datos, puerto=None, query=None)`:
   construyen la URL y devuelven un `Engine` con `pool_pre_ping=True` y
@@ -72,7 +72,7 @@ logs/                    logs de desarrollo (ignorado por git)
    en cada modulo y `NullHandler` en el paquete; `configurar_log()` solo se llama
    desde `tests/*`. Prohibido `basicConfig()` y prohibido que un modulo que emite
    agregue manejadores: el unico que agrega es `_log.configurar_log()`, y lo hace
-   sobre el logger "db", nunca sobre el raiz del consumidor.
+   sobre el logger "db_utils", nunca sobre el raiz del consumidor.
 5. **Sin `print()`.** El unico destino de las trazas es `log`; un proceso
    desatendido con `print` no deja rastro. El encabezado `--` de cada sentencia
    se registra en INFO (rastro auditable) y el detalle en DEBUG.
@@ -127,14 +127,14 @@ logs/                    logs de desarrollo (ignorado por git)
 
 ## 5. Verificacion antes de dar por hecho
 
-1. `uv run python -m compileall -q src/db`.
-2. `import db` con el entorno vacio: sin error, `handlers` con el `NullHandler`
-   y ningun engine creado.
+1. `uv run python -m compileall -q src/db_utils`.
+2. `import db_utils` con el entorno vacio: sin error, `handlers` con el
+   `NullHandler` y ningun engine creado.
 3. `uv run python tests/test_ejecutar_sql.py` y `uv run python tests/test_crear_engines.py`
    en 0. El e2e (`tests/test_conexion.py`) necesita credenciales reales: si no
    hay `.env`, se reporta como no verificado en vez de darlo por bueno.
 4. `uv build` sin advertencias de `build_system.requires`; el wheel debe traer
-   `db/__init__.py`.
+   `db_utils/__init__.py`.
 5. Greps de guardia: cero `getenv`/`os.environ` fuera de `_log.py`, cero
    `print(`, cero `basicConfig`, cero `set_separador`, cero `_from_env`, cero
    `load_dotenv`, cero `cwd(`.
@@ -152,6 +152,11 @@ logs/                    logs de desarrollo (ignorado por git)
   `ValueError` (contenido vacio).
 - **0.4.0** — `ejecutar_sql` devuelve `None` y las filas afectadas van al log; se
   elimina la clase `ResultadoSql`.
-- **Sin tag todavia** — Redaccion: el contrato se enuncia en positivo y las
-  fronteras de alcance quedan solo en el README. La instalacion en los
+- **1.0.0** — Primera version estable: el contrato se enuncia en positivo, las
+  fronteras de alcance quedan solo en el README y la instalacion en los
   consumidores pasa a ser por Git con tag fijo, no editable.
+- **Sin tag todavia** — La libreria pasa a llamarse `db_utils` (repositorio
+  `SebaxFentex/db_utils`): cambian la carpeta, el paquete (`src/db_utils`), el
+  nombre de la distribucion y el logger. El prefijo de los archivos de log
+  (`db-`) y la variable `DB_NIVEL_LOG` no cambian: renombrar la libreria no
+  arrastra la configuracion de quien la consume.
