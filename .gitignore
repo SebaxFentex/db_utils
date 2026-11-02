@@ -8,8 +8,5 @@ dist/
 # Configuracion local
 .env
 
-# Salidas de tests
-tests/archivos/descarga/
-
 # Logs de desarrollo (los crea configurar_log al correr los tests)
 logs/

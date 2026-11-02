@@ -109,8 +109,8 @@ logs/                    logs de desarrollo (ignorado por git)
 
 ## 4. Logging, codigos de salida y `.env`
 
-- `configurar_log(nivel=None, prefijo="db-", conservar=30)` configura el logger
-  "db" (no el raiz) con archivo y consola en `logs/` (utf-8), purga los antiguos
+- `configurar_log(nivel=None, prefijo="db_utils-", conservar=30)` configura el logger
+  "db_utils" (no el raiz) con archivo y consola en `logs/` (utf-8), purga los antiguos
   y es idempotente: la segunda llamada no agrega manejadores. Nivel por
   parametro > `DB_NIVEL_LOG` > INFO; un valor invalido cae a INFO. Devuelve el
   `Logger` configurado.
@@ -161,3 +161,6 @@ logs/                    logs de desarrollo (ignorado por git)
   (`db-`) y la variable `DB_NIVEL_LOG` no cambian: renombrar la libreria no
   arrastra la configuracion de quien la consume. Rompe el import de cualquier
   consumidor que todavia haga `import db`.
+- **1.2.0** — El prefijo de log pasa a `db_utils-` (igual que el logger y el
+  paquete); los tests traducen a `SystemExit(exc.codigo_salida)`; imports
+  absolutos en el paquete; `LICENSE` MIT y `.gitattributes` (LF) en la raiz.

@@ -8,13 +8,13 @@ Las credenciales y opciones de cada funcion entran por parametro.
 
 import logging
 
-from ._excepciones import ExcepcionConexion, ExcepcionDb, ExcepcionEjecucionSql
-from .conexion import (
+from db_utils._excepciones import ExcepcionConexion, ExcepcionDb, ExcepcionEjecucionSql
+from db_utils.conexion import (
     crear_engine_oracle,
     crear_engine_sqlserver,
     inicializar_cliente_oracle,
 )
-from .ejecucion import SEPARADOR_CONSULTAS, ejecutar_sql
+from db_utils.ejecucion import SEPARADOR_CONSULTAS, ejecutar_sql
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 

@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-PREFIJO_LOG_PREDETERMINADO = "db-"
+PREFIJO_LOG_PREDETERMINADO = "db_utils-"
 NIVEL_LOG_PREDETERMINADO = "INFO"
 MAX_LOGS_PREDETERMINADO = 30
 
@@ -39,7 +39,7 @@ def configurar_log(
 
     Nivel: parametro > env DB_NIVEL_LOG > NIVEL_LOG_PREDETERMINADO.
     Valor invalido cae a NIVEL_LOG_PREDETERMINADO. Prefijo y retencion llegan
-    por parametro (defaults "db-" y 30).
+    por parametro (defaults "db_utils-" y 30).
     El NullHandler que la libreria agrega en db_utils/__init__.py no cuenta
     como configuracion: se ignora a proposito para poder configurarlo aqui.
     """

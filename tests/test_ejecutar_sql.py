@@ -189,13 +189,16 @@ def main() -> None:
     log.info("Test de ejecutar_sql")
 
     engine = _crear_engine()
-    _probar_retorno_y_parametros(engine)
-    _probar_backslash_intacto(engine)
-    _probar_separador(engine)
-    _probar_atomicidad(engine)
-    _probar_conexion_invalida()
-    _probar_entrada_invalida(engine)
-    _probar_sin_print_y_con_log(engine)
+    try:
+        _probar_retorno_y_parametros(engine)
+        _probar_backslash_intacto(engine)
+        _probar_separador(engine)
+        _probar_atomicidad(engine)
+        _probar_conexion_invalida()
+        _probar_entrada_invalida(engine)
+        _probar_sin_print_y_con_log(engine)
+    except (ExcepcionConexion, ExcepcionEjecucionSql) as exc:
+        raise SystemExit(exc.codigo_salida) from exc
 
     log.info("OK test_ejecutar_sql completo")
 

@@ -122,10 +122,13 @@ def main() -> None:
     configurar_log()
     log.info("Test de construccion de engines")
 
-    _probar_oracle()
-    _probar_sqlserver()
-    _probar_validaciones()
-    _probar_cliente_oracle()
+    try:
+        _probar_oracle()
+        _probar_sqlserver()
+        _probar_validaciones()
+        _probar_cliente_oracle()
+    except ExcepcionConexion as exc:
+        raise SystemExit(exc.codigo_salida) from exc
 
     log.info("OK test_crear_engines completo")
 
