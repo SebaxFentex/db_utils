@@ -47,7 +47,7 @@ En el `pyproject.toml` de `python_<nombre>`, por Git con el tag fijo (nunca
 dependencies = ["db_utils"]
 
 [tool.uv.sources]
-db_utils = { git = "https://github.com/SebaxFentex/db_utils", tag = "v1.2.0" }
+db_utils = { git = "https://github.com/SebaxFentex/db_utils", tag = "v1.3.0" }
 ```
 
 El repositorio es publico: no hacen falta credenciales. El `tag` fija la version
@@ -192,7 +192,6 @@ datos de `.env` (copiar `.env.example`) y falla con mensaje si no estan.
 ```text
 src/db_utils/
   __init__.py        NullHandler + API publica
-  _log.py            configurar_log() y purgar_logs() para los tests
   _excepciones.py    ExcepcionDb, ExcepcionConexion, ExcepcionEjecucionSql
   conexion.py        crear_engine_oracle / crear_engine_sqlserver / inicializar_cliente_oracle
   ejecucion.py       SEPARADOR_CONSULTAS, ejecutar_sql

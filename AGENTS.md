@@ -18,7 +18,6 @@ Stack: Python 3.14, `uv`, SQLAlchemy 2.1, `oracledb` 26 (thin por defecto),
 ```text
 src/db_utils/
   __init__.py        NullHandler + API publica (sin re-exports de modulos internos)
-  _log.py            configurar_log() + purgar_logs() — solo para entrypoints
   _excepciones.py    ExcepcionDb (1), ExcepcionConexion (2), ExcepcionEjecucionSql (3)
   conexion.py        crear_engine_oracle / crear_engine_sqlserver / inicializar_cliente_oracle
   ejecucion.py       SEPARADOR_CONSULTAS, ejecutar_sql
@@ -58,9 +57,9 @@ logs/                    logs de desarrollo (ignorado por git)
 
 ## 3. Reglas inviolables
 
-1. **Cero lecturas de entorno en la libreria.** `conexion.py` y `ejecucion.py`
-   no importan `os`; la unica excepcion es `DB_NIVEL_LOG` dentro de `_log.py`,
-   que es un entrypoint de desarrollo. Un valor que cambia por maquina se pasa
+1. **Cero lecturas de entorno en la libreria.** Ningun modulo de `src/`
+   importa `os`: los tests leen `DB_NIVEL_LOG` y lo pasan como parametro a
+   `log_utils.configurar_log`. Un valor que cambia por maquina se pasa
    como parametro.
 2. **Parametros ligados, nunca interpolacion.** Los valores viajan por
    `:nombre` a SQLAlchemy. Interpolar con `re.sub` corrompe datos (un `\n` de
@@ -70,9 +69,9 @@ logs/                    logs de desarrollo (ignorado por git)
    de cinco updates dejaba dos aplicados si el tercero fallaba.
 4. **La libreria emite, el entrypoint configura.** `logging.getLogger(__name__)`
    en cada modulo y `NullHandler` en el paquete; `configurar_log()` solo se llama
-   desde `tests/*`. Prohibido `basicConfig()` y prohibido que un modulo que emite
-   agregue manejadores: el unico que agrega es `_log.configurar_log()`, y lo hace
-   sobre el logger "db_utils", nunca sobre el raiz del consumidor.
+   desde `tests/*` via `log_utils.configurar_log()`. Prohibido `basicConfig()` y
+   prohibido que un modulo que emite agregue manejadores: el unico que agrega es
+   `log_utils`, y lo hace sobre el logger "db_utils", nunca sobre el raiz del consumidor.
 5. **Sin `print()`.** El unico destino de las trazas es `log`; un proceso
    desatendido con `print` no deja rastro. El encabezado `--` de cada sentencia
    se registra en INFO (rastro auditable) y el detalle en DEBUG.
@@ -109,11 +108,11 @@ logs/                    logs de desarrollo (ignorado por git)
 
 ## 4. Logging, codigos de salida y `.env`
 
-- `configurar_log(nivel=None, prefijo="db_utils-", conservar=30)` configura el logger
-  "db_utils" (no el raiz) con archivo y consola en `logs/` (utf-8), purga los antiguos
-  y es idempotente: la segunda llamada no agrega manejadores. Nivel por
-  parametro > `DB_NIVEL_LOG` > INFO; un valor invalido cae a INFO. Devuelve el
-  `Logger` configurado.
+- Los tests llaman `log_utils.configurar_log(nombre="db_utils",
+  carpeta_logs=<repo>/logs, nivel_archivo/nivel_consola=os.environ.get("DB_NIVEL_LOG"),
+  prefijo="db_utils-")`: archivo en DEBUG y consola en INFO, cada uno con su
+  formato, purga los antiguos e idempotente. Sin `DB_NIVEL_LOG` rigen los
+  defaults de `log_utils`. Devuelve el `Logger` configurado.
 - Codigos: `0` correcto · `1` fallo generico · `2` conexion · `3` SQL. El
   consumidor hace `sys.exit(exc.codigo_salida)`.
 - `.env` local (ignorado por git) solo lo usa `tests/test_conexion.py`. Se
@@ -135,7 +134,7 @@ logs/                    logs de desarrollo (ignorado por git)
    hay `.env`, se reporta como no verificado en vez de darlo por bueno.
 4. `uv build` sin advertencias de `build_system.requires`; el wheel debe traer
    `db_utils/__init__.py`.
-5. Greps de guardia: cero `getenv`/`os.environ` fuera de `_log.py`, cero
+5. Greps de guardia: cero `getenv`/`os.environ` en `src/`, cero
    `print(`, cero `basicConfig`, cero `set_separador`, cero `_from_env`, cero
    `load_dotenv`, cero `cwd(`.
 6. Los `.bat` se prueban ejecutandolos: `cmd.exe /c ejecutables\build.bat` debe
@@ -161,6 +160,9 @@ logs/                    logs de desarrollo (ignorado por git)
   (`db-`) y la variable `DB_NIVEL_LOG` no cambian: renombrar la libreria no
   arrastra la configuracion de quien la consume. Rompe el import de cualquier
   consumidor que todavia haga `import db`.
+- **1.3.0** — Logging via `log_utils` (v0.1.0, dependencia por Git con tag):
+  se elimina `src/db_utils/_log.py`; los tests llaman
+  `log_utils.configurar_log` con archivo en DEBUG y consola en INFO.
 - **1.2.0** — El prefijo de log pasa a `db_utils-` (igual que el logger y el
   paquete); los tests traducen a `SystemExit(exc.codigo_salida)`; imports
   absolutos en el paquete; `LICENSE` MIT y `.gitattributes` (LF) en la raiz.

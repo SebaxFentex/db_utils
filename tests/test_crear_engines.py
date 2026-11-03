@@ -9,6 +9,8 @@ Uso: uv run python tests/test_crear_engines.py
 from __future__ import annotations
 
 import logging
+import os
+from pathlib import Path
 
 from db_utils import (
     ExcepcionConexion,
@@ -18,7 +20,7 @@ from db_utils import (
 )
 from sqlalchemy.pool import QueuePool
 
-from db_utils._log import configurar_log
+from log_utils import configurar_log
 
 log = logging.getLogger("db_utils.tests")
 
@@ -119,7 +121,13 @@ def _probar_cliente_oracle() -> None:
 
 
 def main() -> None:
-    configurar_log()
+    configurar_log(
+        nombre="db_utils",
+        carpeta_logs=Path(__file__).resolve().parent.parent / "logs",
+        nivel_archivo=os.environ.get("DB_NIVEL_LOG"),
+        nivel_consola=os.environ.get("DB_NIVEL_LOG"),
+        prefijo="db_utils-",
+    )
     log.info("Test de construccion de engines")
 
     try:

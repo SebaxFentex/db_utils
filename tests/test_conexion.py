@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 import os
+from pathlib import Path
 
 from sqlalchemy import Engine
 
@@ -22,7 +23,7 @@ from db_utils import (
     ejecutar_sql,
     inicializar_cliente_oracle,
 )
-from db_utils._log import configurar_log
+from log_utils import configurar_log
 
 log = logging.getLogger("db_utils.tests")
 
@@ -102,7 +103,13 @@ def _probar_conexion(engine: Engine, sql: str, motor: str) -> None:
 
 
 def main() -> None:
-    configurar_log()
+    configurar_log(
+        nombre="db_utils",
+        carpeta_logs=Path(__file__).resolve().parent.parent / "logs",
+        nivel_archivo=os.environ.get("DB_NIVEL_LOG"),
+        nivel_consola=os.environ.get("DB_NIVEL_LOG"),
+        prefijo="db_utils-",
+    )
     log.info("Test de conexion e2e")
 
     motores = []

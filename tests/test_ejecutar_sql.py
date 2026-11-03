@@ -10,9 +10,13 @@ from __future__ import annotations
 
 import io
 import logging
+import os
 from contextlib import redirect_stdout
+from pathlib import Path
 
 from sqlalchemy import create_engine, text
+
+from log_utils import configurar_log
 
 from db_utils import (
     SEPARADOR_CONSULTAS,
@@ -20,7 +24,7 @@ from db_utils import (
     ExcepcionEjecucionSql,
     ejecutar_sql,
 )
-from db_utils._log import configurar_log
+from log_utils import configurar_log
 
 log = logging.getLogger("db_utils.tests")
 
@@ -185,7 +189,13 @@ def _probar_sin_print_y_con_log(engine) -> None:
 
 
 def main() -> None:
-    configurar_log()
+    configurar_log(
+        nombre="db_utils",
+        carpeta_logs=Path(__file__).resolve().parent.parent / "logs",
+        nivel_archivo=os.environ.get("DB_NIVEL_LOG"),
+        nivel_consola=os.environ.get("DB_NIVEL_LOG"),
+        prefijo="db_utils-",
+    )
     log.info("Test de ejecutar_sql")
 
     engine = _crear_engine()
