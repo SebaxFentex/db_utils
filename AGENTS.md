@@ -21,7 +21,7 @@ src/db_utils/
   _excepciones.py    ExcepcionDb (1), ExcepcionConexion (2), ExcepcionEjecucionSql (3)
   conexion.py        crear_engine_oracle / crear_engine_sqlserver / inicializar_cliente_oracle
   ejecucion.py       SEPARADOR_CONSULTAS, ejecutar_sql
-ejecutables/
+Ejecutables/
   build.bat          uv build y lista dist/
   abrir_vscode.bat   abre la raiz de la libreria
   tests/             un .bat por test (mismo nombre que el .py)
@@ -90,8 +90,8 @@ logs/                    logs de desarrollo (ignorado por git)
    rechaza la base. La entrada malformada se deja nativa: `TypeError` si el
    valor no es texto (`None`, un numero) y `ValueError` si es texto pero llega
    vacio o solo con espacios. Nunca se envuelve en `ExcepcionDb`.
-9. **`.bat` de proceso en `ejecutables/` invocando `uv run`.** Un `.bat` por
-   test en `ejecutables/tests/`, con `pause` para leer el resultado y
+9. **`.bat` de proceso en `Ejecutables/` invocando `uv run`.** Un `.bat` por
+   test en `Ejecutables/tests/`, con `pause` para leer el resultado y
    propagacion del codigo de salida. `abrir_vscode.bat` es utilitario: no lleva
    `uv run`.
 10. **Nada especulativo.** Sin abstracciones de un solo uso ni parametros de
@@ -137,7 +137,7 @@ logs/                    logs de desarrollo (ignorado por git)
 5. Greps de guardia: cero `getenv`/`os.environ` en `src/`, cero
    `print(`, cero `basicConfig`, cero `set_separador`, cero `_from_env`, cero
    `load_dotenv`, cero `cwd(`.
-6. Los `.bat` se prueban ejecutandolos: `cmd.exe /c ejecutables\build.bat` debe
+6. Los `.bat` se prueban ejecutandolos: `cmd.exe /c Ejecutables\build.bat` debe
    llegar al `pause` final listando `dist\`.
 
 ## 6. Historial

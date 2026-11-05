@@ -195,7 +195,7 @@ src/db_utils/
   _excepciones.py    ExcepcionDb, ExcepcionConexion, ExcepcionEjecucionSql
   conexion.py        crear_engine_oracle / crear_engine_sqlserver / inicializar_cliente_oracle
   ejecucion.py       SEPARADOR_CONSULTAS, ejecutar_sql
-ejecutables/         build.bat, abrir_vscode.bat y tests/ (un .bat por test)
+Ejecutables/         build.bat, abrir_vscode.bat y tests/ (un .bat por test)
 tests/               los tres tests; el unico lugar del ecosistema con tests
 logs/                logs de desarrollo del test (ignorado por git)
 ```
