@@ -168,3 +168,7 @@ logs/                    logs de desarrollo (ignorado por git)
 - **1.2.0** — El prefijo de log pasa a `db_utils-` (igual que el logger y el
   paquete); los tests traducen a `SystemExit(exc.codigo_salida)`; imports
   absolutos en el paquete; `LICENSE` MIT y `.gitattributes` (LF) en la raiz.
+- **1.4.0** — Nueva funcion `crear_engine_teradata(usuario, clave, host,
+  base_datos)` con el dialecto `teradatasql` (dependencia
+  `teradatasqlalchemy`); sin parametro `query` ni puerto. El e2e acepta el
+  bloque `TERADATA_*` y los docs listan el tercer motor.
