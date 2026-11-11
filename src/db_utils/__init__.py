@@ -1,4 +1,4 @@
-"""Utilidades para crear engines de SQLAlchemy y ejecutar SQL en Oracle y SQL Server.
+"""Utilidades para crear engines de SQLAlchemy y ejecutar SQL en Oracle, SQL Server y Teradata.
 
 La libreria emite logs y el entrypoint los configura: aqui solo se agrega un
 ``NullHandler`` para no ensuciar la salida de quien importa.
@@ -12,6 +12,7 @@ from db_utils._excepciones import ExcepcionConexion, ExcepcionDb, ExcepcionEjecu
 from db_utils.conexion import (
     crear_engine_oracle,
     crear_engine_sqlserver,
+    crear_engine_teradata,
     inicializar_cliente_oracle,
 )
 from db_utils.ejecucion import SEPARADOR_CONSULTAS, ejecutar_sql
@@ -25,6 +26,7 @@ __all__ = [
     "ExcepcionEjecucionSql",
     "crear_engine_oracle",
     "crear_engine_sqlserver",
+    "crear_engine_teradata",
     "ejecutar_sql",
     "inicializar_cliente_oracle",
 ]

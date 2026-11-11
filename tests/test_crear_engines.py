@@ -16,9 +16,10 @@ from db_utils import (
     ExcepcionConexion,
     crear_engine_oracle,
     crear_engine_sqlserver,
+    crear_engine_teradata,
     inicializar_cliente_oracle,
 )
-from sqlalchemy.pool import QueuePool
+from sqlalchemy.pool import QueuePool, SingletonThreadPool
 
 from log_utils import configurar_log
 
@@ -74,6 +75,28 @@ def _probar_sqlserver() -> None:
     log.info("OK engine SQL Server con puerto y sin opciones")
 
 
+def _probar_teradata() -> None:
+    engine = crear_engine_teradata(
+        usuario="usuario_prueba",
+        clave="clave_secreta",
+        host="servidor.local",
+        base_datos="BASE",
+    )
+    url = engine.url.render_as_string(hide_password=True)
+    assert "teradatasql" in url, f"driver inesperado: {url}"
+    assert "servidor.local" in url, f"host ausente: {url}"
+    assert "BASE" in url, f"base ausente: {url}"
+    assert "clave_secreta" not in url, f"la clave quedo visible: {url}"
+    # El dialecto teradatasql usa SingletonThreadPool por defecto (no QueuePool
+    # como Oracle/SQL Server): se respeta su default. `status()` es la API
+    # publica del pool y reporta las conexiones abiertas (`size: 0` = ninguna).
+    assert isinstance(engine.pool, SingletonThreadPool), (
+        f"pool inesperado: {type(engine.pool).__name__}"
+    )
+    assert "size: 0" in engine.pool.status(), "construir el engine abrio una conexion"
+    log.info("OK engine Teradata: %s", url)
+
+
 def _probar_validaciones() -> None:
     casos = (
         ("usuario vacio", lambda: crear_engine_oracle("", "c", "h", "s")),
@@ -81,6 +104,7 @@ def _probar_validaciones() -> None:
         ("puerto invalido", lambda: crear_engine_oracle("u", "c", "h", "s", puerto=0)),
         ("base vacia", lambda: crear_engine_sqlserver("u", "c", "h", " ")),
         ("puerto sqlserver invalido", lambda: crear_engine_sqlserver("u", "c", "h", "b", puerto=70000)),
+        ("base teradata vacia", lambda: crear_engine_teradata("u", "c", "h", " ")),
     )
     for descripcion, llamada in casos:
         try:
@@ -93,6 +117,7 @@ def _probar_validaciones() -> None:
     casos_tipo = (
         ("usuario None", lambda: crear_engine_oracle(None, "c", "h", "s")),  # ty: ignore[invalid-argument-type]
         ("base None", lambda: crear_engine_sqlserver("u", "c", "h", None)),  # ty: ignore[invalid-argument-type]
+        ("base teradata None", lambda: crear_engine_teradata("u", "c", "h", None)),  # ty: ignore[invalid-argument-type]
     )
     for descripcion, llamada in casos_tipo:
         try:
@@ -133,6 +158,7 @@ def main() -> None:
     try:
         _probar_oracle()
         _probar_sqlserver()
+        _probar_teradata()
         _probar_validaciones()
         _probar_cliente_oracle()
     except ExcepcionConexion as exc:

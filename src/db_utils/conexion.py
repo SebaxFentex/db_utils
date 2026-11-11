@@ -112,6 +112,46 @@ def crear_engine_sqlserver(
     return create_engine(url, pool_pre_ping=True, pool_recycle=1800)
 
 
+def crear_engine_teradata(
+    usuario: str,
+    clave: str,
+    host: str,
+    base_datos: str,
+) -> Engine:
+    """Crea un engine de Teradata.
+
+    Args:
+        usuario: usuario de la base.
+        clave: clave del usuario.
+        host: nombre o IP del servidor.
+        base_datos: base a la que se conecta.
+
+    Returns:
+        Engine de SQLAlchemy configurado con verificacion de conexion previa.
+
+    Raises:
+        TypeError: si un parametro obligatorio no es texto.
+        ValueError: si un parametro obligatorio llega vacio.
+
+    Notes:
+        Usa el dialecto ``teradatasql`` (paquete ``teradatasqlalchemy``).
+    """
+    usuario = _verificar_parametro_obligatorio(usuario, "usuario")
+    clave = _verificar_parametro_obligatorio(clave, "clave")
+    host = _verificar_parametro_obligatorio(host, "host")
+    base_datos = _verificar_parametro_obligatorio(base_datos, "base_datos")
+
+    url = URL.create(
+        drivername="teradatasql",
+        username=usuario,
+        password=clave,
+        host=host,
+        database=base_datos,
+    )
+    log.debug("Engine Teradata construido para %s/%s", host, base_datos)
+    return create_engine(url, pool_pre_ping=True, pool_recycle=1800)
+
+
 def inicializar_cliente_oracle(ruta_cliente: str) -> None:
     """Inicializa Oracle Client en modo thick.
 

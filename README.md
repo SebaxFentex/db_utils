@@ -1,7 +1,7 @@
 # db_utils
 
 Libreria interna para crear engines de SQLAlchemy y ejecutar bloques de SQL en
-Oracle y SQL Server.
+Oracle, SQL Server y Teradata.
 
 ```python
 from db_utils import crear_engine_oracle, ejecutar_sql
@@ -14,8 +14,8 @@ ejecutar_sql("update tabla set estado = 1 where periodo = :periodo", engine, par
 
 **Hace**
 
-- Construye engines de SQLAlchemy para Oracle (`oracle+oracledb`) y SQL Server
-  (`mssql+pymssql`) a partir de parametros explicitos.
+- Construye engines de SQLAlchemy para Oracle (`oracle+oracledb`), SQL Server
+  (`mssql+pymssql`) y Teradata (`teradatasql`) a partir de parametros explicitos.
 - Ejecuta una o varias sentencias DDL/DML en **una sola transaccion**: si una
   falla, no queda ninguna aplicada. Devuelve `None`: el detalle queda en el log.
 - Permite separar sentencias con un separador propio (`SEPARADOR_CONSULTAS` por
@@ -67,6 +67,7 @@ uv lock && uv sync
 | Login manual | No aplica: la libreria no pide credenciales ni MFA |
 | Oracle Client | Solo si se necesita modo thick (`inicializar_cliente_oracle`), antes de la primera conexion |
 | Driver SQL Server | `pymssql` viaja como dependencia de la libreria; no instalar aparte |
+| Driver Teradata | `teradatasqlalchemy` viaja como dependencia de la libreria; no instalar aparte |
 
 No hay `.bat` de la libreria que el consumidor deba ejecutar.
 
@@ -111,6 +112,16 @@ engine = crear_engine_sqlserver(
 )
 ```
 
+Teradata:
+
+```python
+from db_utils import crear_engine_teradata
+
+engine = crear_engine_teradata(
+    usuario="usuario", clave="clave", host="servidor", base_datos="BASE",
+)
+```
+
 ## 5. API publica
 
 ### `crear_engine_oracle(usuario, clave, host, servicio, puerto=1521, query=None) -> Engine`
@@ -124,6 +135,12 @@ el puerto no es valido. La conexion se abre en el primer uso.
 Construye el engine de SQL Server con `pymssql`. `puerto=None` usa el default del
 driver (1433). `query` es el lugar para `{"tds_version": "7.0"}` en bases
 antiguas. **Lanza** `TypeError` o `ValueError` con las mismas reglas que Oracle.
+
+### `crear_engine_teradata(usuario, clave, host, base_datos) -> Engine`
+
+Construye el engine de Teradata con el dialecto `teradatasql`.
+**Lanza** `TypeError` si un parametro no es texto y `ValueError` si llega vacio.
+La conexion se abre en el primer uso.
 
 ### `inicializar_cliente_oracle(ruta_cliente) -> None`
 
@@ -193,7 +210,7 @@ datos de `.env` (copiar `.env.example`) y falla con mensaje si no estan.
 src/db_utils/
   __init__.py        NullHandler + API publica
   _excepciones.py    ExcepcionDb, ExcepcionConexion, ExcepcionEjecucionSql
-  conexion.py        crear_engine_oracle / crear_engine_sqlserver / inicializar_cliente_oracle
+  conexion.py        crear_engine_oracle / crear_engine_sqlserver / crear_engine_teradata / inicializar_cliente_oracle
   ejecucion.py       SEPARADOR_CONSULTAS, ejecutar_sql
 Ejecutables/         build.bat, abrir_vscode.bat y tests/ (un .bat por test)
 tests/               los tres tests; el unico lugar del ecosistema con tests

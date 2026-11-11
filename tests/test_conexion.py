@@ -1,4 +1,4 @@
-"""Test e2e opcional contra Oracle y SQL Server reales.
+"""Test e2e opcional contra Oracle, SQL Server y Teradata reales.
 
 Lee la configuracion del `.env` local (ver `.env.example`). Si no hay ninguna
 base configurada falla con mensaje, en lugar de inventar valores por defecto.
@@ -20,6 +20,7 @@ from db_utils import (
     ExcepcionEjecucionSql,
     crear_engine_oracle,
     crear_engine_sqlserver,
+    crear_engine_teradata,
     ejecutar_sql,
     inicializar_cliente_oracle,
 )
@@ -84,6 +85,21 @@ def _probar_sqlserver() -> None:
     _probar_conexion(engine, "select 1 as uno", "SQL Server")
 
 
+def _probar_teradata() -> None:
+    usuario = _leer_variable_obligatoria("TERADATA_USUARIO")
+    clave = _leer_variable_obligatoria("TERADATA_CLAVE")
+    host = _leer_variable_obligatoria("TERADATA_HOST")
+    base_datos = _leer_variable_obligatoria("TERADATA_BD")
+
+    engine = crear_engine_teradata(
+        usuario=usuario,
+        clave=clave,
+        host=host,
+        base_datos=base_datos,
+    )
+    _probar_conexion(engine, "select 1 as uno", "Teradata")
+
+
 def _probar_conexion(engine: Engine, sql: str, motor: str) -> None:
     """Ejercita conexion y sentencia contra la base real.
 
@@ -117,10 +133,12 @@ def main() -> None:
         motores.append(("Oracle", _probar_oracle))
     if os.environ.get("SQLSERVER_USUARIO"):
         motores.append(("SQL Server", _probar_sqlserver))
+    if os.environ.get("TERADATA_USUARIO"):
+        motores.append(("Teradata", _probar_teradata))
     if not motores:
         raise SystemExit(
             "No hay ninguna base configurada: define ORACLE_USUARIO... o "
-            "SQLSERVER_USUARIO... en el .env local (ver .env.example)."
+            "SQLSERVER_USUARIO... o TERADATA_USUARIO... en el .env local (ver .env.example)."
         )
 
     for nombre, prueba in motores:

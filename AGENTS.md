@@ -6,20 +6,20 @@ Guia para agentes (y humanos) que trabajan en este repo. Cada regla con su
 ## 1. Proyecto en 30 segundos
 
 Libreria interna PAQUETE (`uv_build`, layout `src/`) que construye engines de
-SQLAlchemy para Oracle y SQL Server y ejecuta bloques de SQL en una sola
+SQLAlchemy para Oracle, SQL Server y Teradata y ejecuta bloques de SQL en una sola
 transaccion. Se publica en `https://github.com/SebaxFentex/db_utils` y los
 proyectos de `D:\Tigo\Proyectos` la declaran por Git con un tag fijo en su
 `[tool.uv.sources]`; no se opera con el Programador de tareas y no pide
 credenciales a ningun humano.
 
 Stack: Python 3.14, `uv`, SQLAlchemy 2.1, `oracledb` 26 (thin por defecto),
-`pymssql` 2.4.
+`pymssql` 2.4, `teradatasqlalchemy` 20 (dialecto `teradatasql`).
 
 ```text
 src/db_utils/
   __init__.py        NullHandler + API publica (sin re-exports de modulos internos)
   _excepciones.py    ExcepcionDb (1), ExcepcionConexion (2), ExcepcionEjecucionSql (3)
-  conexion.py        crear_engine_oracle / crear_engine_sqlserver / inicializar_cliente_oracle
+  conexion.py        crear_engine_oracle / crear_engine_sqlserver / crear_engine_teradata / inicializar_cliente_oracle
   ejecucion.py       SEPARADOR_CONSULTAS, ejecutar_sql
 Ejecutables/
   build.bat          uv build y lista dist/
@@ -28,7 +28,7 @@ Ejecutables/
 tests/
   test_ejecutar_sql.py   local, sqlite en memoria (sin credenciales)
   test_crear_engines.py  local, inspecciona la URL del engine (sin conectar)
-  test_conexion.py       e2e contra Oracle/SQL Server, lee .env
+  test_conexion.py       e2e contra Oracle/SQL Server/Teradata, lee .env
 logs/                    logs de desarrollo (ignorado por git)
 ```
 
@@ -36,8 +36,9 @@ logs/                    logs de desarrollo (ignorado por git)
 
 - **La libreria no lee entorno.** `import db_utils` no exige ninguna variable y
   no abre conexiones. Todo entra por parametro: el `.env` es del consumidor.
-- `crear_engine_oracle(usuario, clave, host, servicio, puerto=1521, query=None)`
-  y `crear_engine_sqlserver(usuario, clave, host, base_datos, puerto=None, query=None)`:
+- `crear_engine_oracle(usuario, clave, host, servicio, puerto=1521, query=None)`,
+  `crear_engine_sqlserver(usuario, clave, host, base_datos, puerto=None, query=None)`
+  y `crear_engine_teradata(usuario, clave, host, base_datos)`:
   construyen la URL y devuelven un `Engine` con `pool_pre_ping=True` y
   `pool_recycle=1800`. No conectan.
 - `query` es la valvula para opciones del driver. **Las bases antiguas que solo
@@ -120,7 +121,8 @@ logs/                    logs de desarrollo (ignorado por git)
   `ORACLE_HOST`, `ORACLE_SERVICIO` (y opcionales `ORACLE_PUERTO`,
   `ORACLE_RUTA_CLIENTE`), `SQLSERVER_USUARIO`, `SQLSERVER_CLAVE`,
   `SQLSERVER_HOST`, `SQLSERVER_BD` (y opcionales `SQLSERVER_PUERTO`,
-  `SQLSERVER_TDS`), `DB_NIVEL_LOG`.
+  `SQLSERVER_TDS`), `TERADATA_USUARIO`, `TERADATA_CLAVE`, `TERADATA_HOST`,
+  `TERADATA_BD`, `DB_NIVEL_LOG`.
 - Nunca loguear credenciales: para describir un engine se usa
   `engine.url.render_as_string(hide_password=True)`.
 
